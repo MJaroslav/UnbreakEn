@@ -1,0 +1,16 @@
+[
+{
+  "modid": "unbreaken",
+  "name": "UnbreakEn Mod",
+  "description": "Enchantment that will save your instrument.",
+  "version": "1.0.0",
+  "mcversion": "1.7.10",
+  "url": "https://minecraft.curseforge.com/projects/unbreaken",
+  "updateUrl": "",
+  "authorList": ["MJaroslav"],
+  "credits": "",
+  "logoFile": "assets/unbreaken/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
