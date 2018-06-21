@@ -21,16 +21,31 @@ public class UnbreakEnchantment extends Enchantment {
 
     @Override
     public int getMinEnchantability(int lvl) {
-        return enchantmentMinCost;
+        return ModConfiguration.onlyChestLoot ? 25 : enchantmentMinCost;
     }
 
     @Override
     public int getMaxEnchantability(int lvl) {
-        return enchantmentMaxCost;
+        return ModConfiguration.onlyChestLoot ? 50 : enchantmentMaxCost;
     }
 
     @Override
     public boolean canApply(ItemStack stack) {
         return super.canApply(stack) && !(stack.getItem() instanceof ItemArmor);
+    }
+
+    @Override
+    public boolean isTreasureEnchantment() {
+        return ModConfiguration.onlyChestLoot;
+    }
+
+    @Override
+    public boolean isCurse() {
+        return ModConfiguration.enchantmentIsCurse;
+    }
+
+    @Override
+    public Enchantment.Rarity getRarity() {
+        return Rarity.valueOf(ModConfiguration.enchantmentRarity);
     }
 }

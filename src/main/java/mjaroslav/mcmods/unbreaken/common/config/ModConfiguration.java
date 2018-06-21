@@ -16,6 +16,8 @@ public class ModConfiguration {
     public static String enchantmentRarity = Rarity.UNCOMMON.name();
     public static int enchantmentMinCost = 10;
     public static int enchantmentMaxCost = 20;
+    public static boolean onlyChestLoot = false;
+    public static boolean enchantmentIsCurse = false;
 
     public static final String category = Configuration.CATEGORY_GENERAL;
     public static Configuration instance;
@@ -39,10 +41,12 @@ public class ModConfiguration {
             LOG.error("Configuration not found!");
             return;
         }
-        enable = instance.getBoolean("enable", category, enable, "Enable modification.");
-        enchantmentId = instance.getInt("enchantment_id", category, 63, 0, 255, "Enchantment ID.");
-        enchantmentRarity = instance
-                .get(category, "enchantment_rarity", Rarity.UNCOMMON.name(), "Enchantment rarity.", rarity).getString();
+        enable = instance.getBoolean("enable", category, true,
+                "Enable the functioning of the enchantment. The option works without restarting the game.");
+        enchantmentId = instance.get(category, "enchantment_id", 63, "Enchantment ID").setMinValue(0).setMaxValue(255)
+                .setRequiresMcRestart(true).getInt();
+        enchantmentRarity = instance.get(category, "enchantment_rarity", Rarity.UNCOMMON.name(),
+                "Enchantment rarity, valid values: COMMON | UNCOMMON | RARE | VERY_RARE", rarity).getString();
         enchantmentMinCost = instance.getInt("enchantment_min_cost", category, 10, 1, 30,
                 "The minimum level at which enchantment occurs.");
         enchantmentMaxCost = instance.getInt("enchantment_max_cost", category, 20, 1, 30,
@@ -51,6 +55,10 @@ public class ModConfiguration {
             enchantmentMaxCost = enchantmentMinCost;
         if (instance.hasChanged())
             instance.save();
+        onlyChestLoot = instance.getBoolean("only_chest_loot", category, false,
+                "This enchantment can only be obtained by finding in dungeons.");
+        enchantmentIsCurse = instance.getBoolean("enchantment_is_curse", category, false,
+                "Enchantment is a curse. The name turns red.");
     }
 
     private static String[] rarity = new String[] { Rarity.COMMON.name(), Rarity.UNCOMMON.name(), Rarity.RARE.name(),

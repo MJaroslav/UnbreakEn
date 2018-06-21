@@ -3,30 +3,47 @@ package mjaroslav.mcmods.unbreaken.common.event;
 import static mjaroslav.mcmods.unbreaken.ModUnbreakEn.hasUnbreaklEnchantment;
 import static mjaroslav.mcmods.unbreaken.common.config.ModConfiguration.enable;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import mjaroslav.mcmods.unbreaken.ModUnbreakEn;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModEventHandler {
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public void onLivingHurtEvent(LivingHurtEvent event) {
+    public void tooltipEvent(ItemTooltipEvent event) {
+        if (!enable && hasUnbreaklEnchantment(event.getItemStack()))
+            event.getToolTip().add(ChatFormatting.RED
+                    + I18n.format("tooltip.unbreaken.disabled", ModUnbreakEn.UNBREAK.getTranslatedName(1)));
+    }
+
+    @SubscribeEvent
+    public void onLivingDamageEvent(LivingDamageEvent event) {
         if (enable && event.getSource().damageType.equals("player")) {
             EntityPlayer player = (EntityPlayer) event.getSource().getTrueSource();
-            if (player == null || player.getHeldItemMainhand() == null)
+            if (player == null || player.getHeldItemMainhand().isEmpty())
                 return;
-            if (hasUnbreaklEnchantment(player.getHeldItemMainhand())
-                    && player.getHeldItemMainhand().getItemDamage() >= player.getHeldItemMainhand().getMaxDamage() - 2)
+            if (hasUnbreaklEnchantment(player.getHeldItemMainhand()) && player.getHeldItemMainhand()
+                    .getItemDamage() >= player.getHeldItemMainhand().getMaxDamage() - 2) {
                 player.getHeldItemMainhand().setItemDamage(player.getHeldItemMainhand().getItemDamage() - 2);
-            event.setAmount(1.0F);
+                event.setAmount(1.0F);
+            }
         }
     }
 
     @SubscribeEvent
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        if (!enable || event.getEntityPlayer() == null || event.getEntityPlayer().getHeldItem(event.getHand()) == null)
+        if (!enable || event.getEntityPlayer() == null
+                || event.getEntityPlayer().getHeldItem(event.getHand()).isEmpty())
             return;
         if (hasUnbreaklEnchantment(event.getEntityPlayer().getHeldItem(event.getHand()))
                 && event.getEntityPlayer().getHeldItem(event.getHand())
